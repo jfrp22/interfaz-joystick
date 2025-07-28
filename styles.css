@@ -1,7 +1,7 @@
 body {
   margin: 0;
-  font-family: 'Roboto', sans-serif;
-  background: #1E1E1E;
+  font-family: Arial, sans-serif;
+  background: #1a1a1a;
   color: white;
 }
 
@@ -18,13 +18,14 @@ body {
 .control-panel {
   width: 30%;
   padding: 20px;
-  background: #2C3E50;
+  background: #2d2d2d;
+  overflow-y: auto;
 }
 
-.joystick-area {
+.joystick {
   width: 200px;
   height: 200px;
-  margin: 20px auto;
+  margin: 0 auto;
   background: rgba(0, 0, 0, 0.2);
   border-radius: 50%;
 }
@@ -35,18 +36,13 @@ body {
 
 .sliders input {
   width: 100%;
-  margin: 10px 0;
 }
 
 button {
-  padding: 10px;
-  margin: 5px;
   background: #4CAF50;
-  border: none;
   color: white;
+  border: none;
+  padding: 10px 20px;
+  margin-top: 10px;
   cursor: pointer;
-}
-
-button.stop {
-  background: #F44336;
 }
