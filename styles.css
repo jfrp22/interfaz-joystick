@@ -1,0 +1,52 @@
+body {
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  background: #1E1E1E;
+  color: white;
+}
+
+.container {
+  display: flex;
+  height: 100vh;
+}
+
+#3d-view {
+  width: 70%;
+  height: 100%;
+}
+
+.control-panel {
+  width: 30%;
+  padding: 20px;
+  background: #2C3E50;
+}
+
+.joystick-area {
+  width: 200px;
+  height: 200px;
+  margin: 20px auto;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 50%;
+}
+
+.sliders {
+  margin: 20px 0;
+}
+
+.sliders input {
+  width: 100%;
+  margin: 10px 0;
+}
+
+button {
+  padding: 10px;
+  margin: 5px;
+  background: #4CAF50;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+button.stop {
+  background: #F44336;
+}
