@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Control Brazo Robótico 3D</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/nipplejs@0.9.0/dist/nipplejs.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <!-- Visualización 3D -->
+    <div id="3d-view"></div>
+
+    <!-- Panel de Control -->
+    <div class="control-panel">
+      <h2>Control de Ejes</h2>
+      <div id="joystick" class="joystick-area"></div>
+      <div class="sliders">
+        <label>X: <input type="range" id="x-axis" min="0" max="200" value="100"></label>
+        <label>Y: <input type="range" id="y-axis" min="0" max="200" value="100"></label>
+        <label>Z: <input type="range" id="z-axis" min="0" max="100" value="50"></label>
+      </div>
+      <button id="btn-home">Posición Inicial</button>
+      <button id="btn-stop" class="stop">STOP</button>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
