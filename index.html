@@ -3,27 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Control Brazo Robótico 3D</title>
-  <link rel="stylesheet" href="styles.css">
+  <title>Control Antena Parabólica</title>
+  <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/nipplejs@0.9.0/dist/nipplejs.min.js"></script>
 </head>
 <body>
   <div class="container">
-    <!-- Visualización 3D -->
+    <!-- Vista 3D -->
     <div id="3d-view"></div>
-
+    
     <!-- Panel de Control -->
     <div class="control-panel">
-      <h2>Control de Ejes</h2>
-      <div id="joystick" class="joystick-area"></div>
+      <h2>Control Antena</h2>
+      <div id="joystick" class="joystick"></div>
       <div class="sliders">
-        <label>Pan: <input type="range" id="x-axis" min="0" max="360" value="180"></label>
-        <label>Tilt: <input type="range" id="y-axis" min="0" max="180" value="90"></label>
-        <label>Zoom: <input type="range" id="z-axis" min="20" max="100" value="50"></label>
+        <label>Pan (0°-360°): <input type="range" id="pan" min="0" max="360" value="180"></label>
+        <label>Tilt (0°-90°): <input type="range" id="tilt" min="0" max="90" value="45"></label>
       </div>
-      <button id="btn-home">Posición Inicial</button>
-      <button id="btn-stop" class="stop">STOP</button>
+      <div class="angles">
+        <p>Ángulo Pan: <span id="pan-angle">180°</span></p>
+        <p>Ángulo Tilt: <span id="tilt-angle">45°</span></p>
+      </div>
+      <button id="reset">Reset</button>
     </div>
   </div>
   <script src="script.js"></script>
