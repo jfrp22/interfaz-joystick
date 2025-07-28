@@ -1,28 +1,67 @@
-// 1. Configuración de Three.js
+// 1. Escena, cámara y renderizador
 const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x333333);
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth * 0.7 / window.innerHeight, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer();
+const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth * 0.7, window.innerHeight);
 document.getElementById('3d-view').appendChild(renderer.domElement);
 
-// 2. Modelo 3D del brazo robótico (simplificado)
-const base = new THREE.Mesh(
-  new THREE.CylinderGeometry(5, 5, 2, 32),
-  new THREE.MeshBasicMaterial({ color: 0x888888 })
-);
-scene.add(base);
+// 2. Luz para mejor visualización
+const light = new THREE.DirectionalLight(0xffffff, 1);
+light.position.set(5, 10, 7);
+scene.add(light);
+scene.add(new THREE.AmbientLight(0x404040));
 
-const arm = new THREE.Mesh(
-  new THREE.BoxGeometry(1, 10, 1),
-  new THREE.MeshBasicMaterial({ color: 0x4CAF50 })
-);
-arm.position.y = 5;
-scene.add(arm);
+// 3. Modelo de Antena/PTZ
+const createAntenna = () => {
+  const group = new THREE.Group();
 
-camera.position.z = 30;
-camera.position.y = 10;
+  // Base (pan)
+  const base = new THREE.Mesh(
+    new THREE.CylinderGeometry(3, 3, 1, 32),
+    new THREE.MeshPhongMaterial({ color: 0x555555 })
+  );
+  base.rotation.x = Math.PI / 2;
+  group.add(base);
 
-// 3. Joystick Virtual (nippleJS)
+  // Soporte vertical (tilt)
+  const support = new THREE.Mesh(
+    new THREE.BoxGeometry(1, 5, 1),
+    new THREE.MeshPhongMaterial({ color: 0x888888 })
+  );
+  support.position.y = 2.5;
+  group.add(support);
+
+  // Antena/cámara (plato parabólico o cámara)
+  const antenna = new THREE.Mesh(
+    new THREE.ParametricGeometry((u, v, target) => {
+      u = u * Math.PI;
+      v = v * 2 * Math.PI;
+      const radius = 3;
+      target.set(
+        Math.sin(u) * Math.cos(v) * radius,
+        Math.cos(u) * radius + 6,
+        Math.sin(u) * Math.sin(v) * radius
+      );
+    }, 32, 32),
+    new THREE.MeshPhongMaterial({ 
+      color: 0x4CAF50,
+      side: THREE.DoubleSide,
+      wireframe: false 
+    })
+  );
+  group.add(antenna);
+
+  return group;
+};
+
+const antenna = createAntenna();
+scene.add(antenna);
+
+camera.position.set(0, 10, 15);
+camera.lookAt(0, 5, 0);
+
+// 4. Joystick para Pan/Tilt
 const joystick = nipplejs.create({
   zone: document.getElementById('joystick'),
   mode: 'static',
@@ -31,44 +70,56 @@ const joystick = nipplejs.create({
 });
 
 joystick.on('move', (evt, data) => {
-  const speed = 0.1;
-  arm.position.x += data.vector.x * speed;
-  arm.position.y -= data.vector.y * speed;
+  const speed = 0.03;
+  antenna.rotation.y -= data.vector.x * speed; // Pan (horizontal)
+  antenna.children[2].rotation.x = THREE.MathUtils.clamp(
+    antenna.children[2].rotation.x + data.vector.y * speed,
+    -Math.PI / 4,
+    Math.PI / 4
+  ); // Tilt (vertical, con límites)
   updateSliders();
 });
 
-// 4. Sliders para controlar ejes
-const xSlider = document.getElementById('x-axis');
-const ySlider = document.getElementById('y-axis');
-const zSlider = document.getElementById('z-axis');
+// 5. Sliders para control manual
+const panSlider = document.getElementById('x-axis');
+const tiltSlider = document.getElementById('y-axis');
+const zoomSlider = document.getElementById('z-axis');
 
-[xSlider, ySlider, zSlider].forEach(slider => {
-  slider.addEventListener('input', () => {
-    arm.position.x = parseInt(xSlider.value) - 100;
-    arm.position.y = parseInt(ySlider.value) - 100;
-    arm.position.z = parseInt(zSlider.value) - 50;
-  });
+panSlider.addEventListener('input', () => {
+  antenna.rotation.y = (parseInt(panSlider.value) - 180) * (Math.PI / 180);
+});
+
+tiltSlider.addEventListener('input', () => {
+  antenna.children[2].rotation.x = (parseInt(tiltSlider.value) - 90) * (Math.PI / 180);
+});
+
+zoomSlider.addEventListener('input', () => {
+  camera.fov = 100 - parseInt(zoomSlider.value);
+  camera.updateProjectionMatrix();
 });
 
 function updateSliders() {
-  xSlider.value = arm.position.x + 100;
-  ySlider.value = arm.position.y + 100;
-  zSlider.value = arm.position.z + 50;
+  panSlider.value = (antenna.rotation.y * (180 / Math.PI)) + 180;
+  tiltSlider.value = (antenna.children[2].rotation.x * (180 / Math.PI)) + 90;
 }
 
-// 5. Botones de acción
+// 6. Botones de acción
 document.getElementById('btn-home').addEventListener('click', () => {
-  arm.position.set(0, 5, 0);
+  antenna.rotation.set(0, 0, 0);
+  antenna.children[2].rotation.set(0, 0, 0);
   updateSliders();
 });
 
-document.getElementById('btn-stop').addEventListener('click', () => {
-  alert("Movimiento detenido");
-});
-
-// 6. Animación
+// 7. Animación
 function animate() {
   requestAnimationFrame(animate);
   renderer.render(scene, camera);
 }
 animate();
+
+// 8. Ajuste responsive
+window.addEventListener('resize', () => {
+  camera.aspect = (window.innerWidth * 0.7) / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth * 0.7, window.innerHeight);
+});
